@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<head>
+    <title>
+
+    </title>
+    <link rel="stylesheet" type="text/css" href="2.css">
+</head>
+<body>
+    <h1>JavaScript Clock</h1>
+  
+    <div id="clock">
+      <div id="time" class="glow"></div>
+  
+      <div id="date">
+        <span class="month"></span>
+        <span class="day"></span>,
+        <span class="year"></span>
+      </div>
+  
+      <div class="container">
+        <button id="twelveHourBtn">24 hour clock</button>
+      </div>
+    </div>
+  
+    <div class="container">
+      <ul id="days">
+        <li class="monday">пн</li>
+        <li class="tuesday">вт</li>
+        <li class="wednesday">ср</li>
+        <li class="thursday">чт</li>
+        <li class="friday">пт</li>
+        <li class="saturday">сб</li>
+        <li class="sunday">вс</li>
+      </ul>
+    </div>
+    <script language="JavaScript">
+    const switchBtn = document.getElementById("twelveHourBtn");
+
+    let twelveHourBtn = document.getElementById("twelveHourBtn");
+    let getTime = document.getElementById("time");
+    let isTwelveHour = true;
+    
+    // ============ Get the time ======================
+    
+    function checkTime(i) {
+      if (i < 12) {
+        i = "0" + i;
+      }
+      return i;
+    }
+    
+    function startTime() {
+      let hours = "12";
+      let today = new Date();
+      let h = today.getHours();
+    
+      
+      
+      twelveHourBtn.innerHTML = hours + " hour clock";
+      let m = today.getMinutes();
+      let s = today.getSeconds();
+      // add a zero in front of numbers<10
+      m = checkTime(m);
+      s = checkTime(s);
+      getTime.innerHTML = h + ":" + m + ":" + s;
+      t = setTimeout(function() {
+        startTime();
+      }, 500);
+    }
+    
+    startTime();
+    
+    switchBtn.addEventListener("click", function(e) {
+      isTwelveHour = !isTwelveHour;
+    });
+    
+    // ============= Get the day of the week =============================
+    switch (new Date().getDay()) {
+      case 0:
+      document.querySelector(".monday").classList.add("glow");
+        break;
+      case 1:
+      document.querySelector(".tuesday").classList.add("glow");
+        break;
+      case 2:
+      document.querySelector(".wednesday").classList.add("glow");
+        break;
+      case 3:
+      document.querySelector(".thursday").classList.add("glow");
+        break;
+      case 4:
+      document.querySelector(".friday").classList.add("glow");
+        break;
+      case 5:
+      document.querySelector(".saturday").classList.add("glow");
+        break;
+      case 6:
+      document.querySelector(".sunday").classList.add("glow");
+        
+    }
+    
+    // ============= Get the date =============================
+    let month = document.querySelector(".month");
+    let day = document.querySelector(".day");
+    let year = document.querySelector(".year");
+    let date = new Date();
+    
+    let months = [
+      "Январь",
+      "Февраль",
+      "Март",
+      "Апрель",
+      "Май",
+      "Июнь",
+      "Июль",
+      "Aвгуст",
+      "Сентябрь",
+      "Oктябрь",
+      "Ноябрь",
+      "Декабрь"
+    ];
+    month.innerHTML = months[date.getMonth()];
+    day.innerHTML = date.getDate();
+    year.innerHTML = date.getFullYear();
+</script>
+
+
+<div id="container1">
+    <canvas id="waterfall"></canvas>
+  </div>
+
+  <script>
+    var waterfallCanvas = function(c, cw, ch){
+     
+    var _this = this;
+    this.c = c;
+    this.ctx = c.getContext('2d');
+    this.cw = cw;
+    this.ch = ch;  
+     
+    this.particles = [];
+    this.particleRate = 6;
+    this.gravity = .15;
+     
+  
+    this.init = function(){  
+    this.loop();
+    };
+     
+    this.reset = function(){  
+    this.ctx.clearRect(0,0,this.cw,this.ch);
+    this.particles = [];
+    };
+     
+    this.rand = function(rMi, rMa){return ~~((Math.random()*(rMa-rMi+1))+rMi);};
+     
+  
+    this.Particle = function(){
+    var newWidth = _this.rand(1,20);
+    var newHeight = _this.rand(1, 45);
+    this.x = _this.rand(10+(newWidth/2), _this.cw-10-(newWidth/2));
+    this.y = -newHeight;
+    this.vx = 0;
+    this.vy = 0;
+    this.width = newWidth;
+    this.height = newHeight;
+    this.hue = _this.rand(200, 220);
+    this.saturation = _this.rand(30, 60);
+    this.lightness = _this.rand(30, 60);
+    };
+     
+    this.Particle.prototype.update = function(i){
+    this.vx += this.vx;  
+    this.vy += _this.gravity;
+    this.x += this.vx;
+    this.y += this.vy;  
+    };
+     
+    this.Particle.prototype.render = function(){  
+    _this.ctx.strokeStyle = 'hsla('+this.hue+', '+this.saturation+'%, '+this.lightness+'%, .05)';
+    _this.ctx.beginPath();
+    _this.ctx.moveTo(this.x, this.y);
+    _this.ctx.lineTo(this.x, this.y + this.height);
+    _this.ctx.lineWidth = this.width/2;
+    _this.ctx.lineCap = 'round';
+    _this.ctx.stroke();
+    };
+     
+    this.Particle.prototype.renderBubble = function(){  
+    _this.ctx.fillStyle = 'hsla('+this.hue+', 40%, 40%, 1)';
+    _this.ctx.fillStyle = 'hsla('+this.hue+', '+this.saturation+'%, '+this.lightness+'%, .3)';
+    _this.ctx.beginPath();
+    _this.ctx.arc(this.x+this.width/2, _this.ch-20-_this.rand(0,10), _this.rand(1,8), 0, Math.PI*2, false);
+    _this.ctx.fill();
+    };
+     
+    this.createParticles = function(){
+    var i = this.particleRate;
+    while(i--){
+    this.particles.push(new this.Particle());
+    }
+    };
+     
+    this.removeParticles = function(){
+    var i = this.particleRate;
+    while(i--){
+    var p = this.particles[i];
+    if(p.y > _this.ch-20-p.height){
+    p.renderBubble();
+    _this.particles.splice(i, 1);
+    }  
+    }
+    };
+     
+    this.updateParticles = function(){  
+    var i = this.particles.length;  
+    while(i--){
+    var p = this.particles[i];
+    p.update(i);  
+    };  
+    };
+     
+    this.renderParticles = function(){
+    var i = this.particles.length;  
+    while(i--){
+    var p = this.particles[i];
+    p.render();  
+    };  
+    };
+     
+    this.clearCanvas = function(){  
+    this.ctx.globalCompositeOperation = 'destination-out';
+    this.ctx.fillStyle = 'rgba(255,255,255,.06)';
+    this.ctx.fillRect(0,0,this.cw,this.ch);
+    this.ctx.globalCompositeOperation = 'lighter';
+    };
+     
+    this.loop = function(){
+    var loopIt = function(){  
+    requestAnimationFrame(loopIt, _this.c);  
+    _this.clearCanvas();  
+    _this.createParticles();  
+    _this.updateParticles();  
+    _this.renderParticles();  
+    _this.removeParticles();
+    };
+    loopIt();  
+    };
+     
+    };
+     
+    var isCanvasSupported = function(){
+    var elem = document.createElement('canvas');
+    return !!(elem.getContext && elem.getContext('2d'));
+    };
+     
+    var setupRAF = function(){
+    var lastTime = 0;
+    var vendors = ['ms', 'moz', 'webkit', 'o'];
+    for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x){
+    window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
+    window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame'] || window[vendors[x]+'CancelRequestAnimationFrame'];
+    };
+     
+    if(!window.requestAnimationFrame){
+    window.requestAnimationFrame = function(callback, element){
+    var currTime = new Date().getTime();
+    var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+    var id = window.setTimeout(function() { callback(currTime + timeToCall); }, timeToCall);
+    lastTime = currTime + timeToCall;
+    return id;
+    };
+    };
+     
+    if (!window.cancelAnimationFrame){
+    window.cancelAnimationFrame = function(id){
+    clearTimeout(id);
+    };
+    };
+    };  
+     
+    if(isCanvasSupported()){
+    var c = document.getElementById('waterfall');
+    var cw = c.width = 300;
+    var ch = c.height = 600;  
+    var waterfall = new waterfallCanvas(c, cw, ch);  
+    setupRAF();
+    waterfall.init();
+    }
+  </script>
+  </body>
